@@ -51,45 +51,34 @@ def difference_image_to_binary(image, threshold):
 
 
 def find_contours(binary_image):
-    num_rows = len(binary_image)
-    num_cols = len(binary_image[0])
     contours = []
-    for i in range(num_rows):
-        for j in range(num_cols):
-            if binary_image[i][j] == 1:
+    num_row, num_col = binary_image.shape
+    visited = np.zeros((num_row,num_col), np.uint8)
+    for i in range(num_row):
+        for j in range(num_col):
+            if binary_image[i,j] == 255 and visited[i,j] ==0:
                 contour = []
-                stack = [(i, j)]
+                stack[(i,j)]
                 while stack:
-                    x, y = stack.pop()
-                    if binary_image[x][y] == 1:
-                        binary_image[x][y] = 0
-                        contour.append((x, y))
-                        for dx in [-1, 0, 1]:
-                            for dy in [-1, 0, 1]:
-                                new_x = x + dx
-                                new_y = y + dy
-                                if 0 <= new_x < num_rows and 0 <= new_y < num_cols and binary_image[new_x][new_y] == 1:
-                                    stack.append((new_x, new_y))
+                    x,y = stack.pop()
+                    if binary_image[x,y] == 255 and visited[x,y] == 0:
+                        visited[x,y] = 1
+                        contour.append((x,y))
+                        neighors = []
+                        for dx in [-1,0,1]:
+                            for dy in [-1,0,1]:
+                                new_x = x+dx
+                                new_y = y +dy
+                                if 0 <= new_x < num_row and 0<= new_y < num_col and visited[new_x, new_y] == 0:
+                                    neighors.append((new_x, new_y))
+                        if len(neighors) > 0:
+                            stack.extend(neighors)
                 contours.append(contour)
-    return contours
-def grab_contours(contours):
-    if len(contours) == 2:
-        contours = contours[0]
-    elif len(contours) == 3:
-        contours = contours[1]
-    return contours
+return contours
+                    
 
-def get_bounding_boxes(contours):
-    bounding_boxes = []
-    for contour in contours:
-        x_values = [point[1] for point in contour]
-        y_values = [point[0] for point in contour]
-        min_x = min(x_values)
-        max_x = max(x_values)
-        min_y = min(y_values)
-        max_y = max(y_values)
-        bounding_boxes.append((min_x, min_y, max_x - min_x, max_y - min_y))
-    return bounding_boxes
+
+
 path1 = 'O:\E\pyton\image1.png'
 path2 = 'O:\E\pyton\image2.png'
 image1 = loading_image(path1)
