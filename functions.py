@@ -1,4 +1,3 @@
-import imutils
 import numpy as np
 import cv2
 from PIL import Image
@@ -87,3 +86,25 @@ def grab_contours(contours):
                 contour_matrix[i, 1] = point[0]
             grabbed_contours.append(contour_matrix)
     return grabbed_contours
+def bounding_rect(con):
+    min_x = np.min(con[:,:,0])
+    min_y = np.min(con[:,:,1])
+    max_x = np.max(con[:,:,0])
+    max_y = np.max(con[:,:,1])
+    widht = max_x - min_x
+    height = max_y - min_y
+    return min_x, min_y, width, height
+def contour_area(con):
+    area = 0
+    num_points = len(con)
+    for i in range(num_points):
+        x1,y1 = num_points[i][0]
+        x2,y2 = num_points[(i+1) % num_points]
+        area += (x1 * y2) - (x2 * y1)
+        return abs(area) / 2
+def draw_rectangle(image, x, y, width, height, color, thikness):
+    image[y:y+thikness, x:x+width] = color
+    image[y:y+height, x:x+thikness] = color
+    image[y:y+height, x+width-thikness: x+width] = color
+    image[y+height-thikness: y+ heihgt, x : x+ width] color
+    
